@@ -52,53 +52,15 @@ void vcoi_rng_get(struct ax5043 *dev)
 void InitAx5043REG(struct ax5043 *dev)
 {
     static uint8_t i;
-    static uint8_t k = 0;
 
-//    Ax5043_Reset(dev);
+
+
     for (i = 0; i<125 ; i++)
     {
         SpiWriteLongAddressRegister(dev,dev->RegValue[i][0],dev->RegValue[i][1] );
     }
 
-//    if (dev->config->axradio_phy_vcocalib)
-    if (0)
-    {  if (k == 0)
-        {
-            LOG_W("AUTORANG_PLL");
 
-    //        SpiWriteSingleAddressRegister(dev,REG_AX5043_PLLLOOP, 0x09);
-    //        SpiWriteSingleAddressRegister(dev,REG_AX5043_PLLCPI, 0x08);
-    //        SpiWriteSingleAddressRegister(dev,REG_AX5043_PWRMODE, AX5043_PWRSTATE_XTAL_ON);
-    //        SpiWriteSingleAddressRegister(dev,REG_AX5043_MODULATION, 0x08);
-    //        SpiWriteLongAddressRegister(dev,REG_AX5043_FSKDEV2, 0x00);
-    //        SpiWriteLongAddressRegister(dev,REG_AX5043_FSKDEV1, 0x00);
-    //        SpiWriteLongAddressRegister(dev,REG_AX5043_FSKDEV0, 0x00);
-
-    //        RadioXtalON(dev);
-            Ax5043SetRegisters_TX(dev);
-
-            uint32_t f = dev->config->axradio_phy_chanfreq[0];
-            SpiWriteSingleAddressRegister(dev,REG_AX5043_FREQA0, f);
-            SpiWriteSingleAddressRegister(dev,REG_AX5043_FREQA1, (f >> 8));
-            SpiWriteSingleAddressRegister(dev,REG_AX5043_FREQA2, (f >> 16));
-            SpiWriteSingleAddressRegister(dev,REG_AX5043_FREQA3, (f >> 24));
-    //        dev->ubRFState = trxstate_pll_ranging;
-    //        SpiWriteSingleAddressRegister(dev,REG_AX5043_IRQMASK1, 0x10);     // enable pll autoranging done interrupt
-
-
-    //        do
-    //        {
-    //            rt_thread_mdelay(10);
-    //        }
-    //        while (dev->ubRFState == trxstate_pll_ranging);
-    //        dev->ubRFState = trxstate_off;
-    //        SpiWriteSingleAddressRegister(dev,REG_AX5043_IRQMASK1, 0x00);
-
-
-            simple_autorange_pll(dev);
-            k++;
-            }
-        }
     SpiWriteLongAddressRegister(dev,REG_AX5043_PKTLENOFFSET, (SpiReadLongAddressRegister(dev,REG_AX5043_PKTLENOFFSET)));
     SpiWriteSingleAddressRegister(dev,REG_AX5043_PINFUNCIRQ, 0x03);    // AX5043_PINFUNCIRQ = 0x03;  use as IRQ pin
     SpiWriteLongAddressRegister(dev,REG_AX5043_PKTSTOREFLAGS, (0 ? 0x13 : 0x15)); // store RF offset, RSSI and delimiter timing
