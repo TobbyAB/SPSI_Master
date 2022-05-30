@@ -574,10 +574,7 @@ uint8_t rf_startup(struct ax5043 *dev)
 
 
 
-//    if (dev->config->axradio_phy_vcocalib) {
-//        LOG_W("AUTORANG_PLL");
-//        simple_autorange_pll(dev);
-//    }
+
 
     SpiWriteSingleAddressRegister(dev,REG_AX5043_PWRMODE, AX5043_PWRSTATE_POWERDOWN);
 
