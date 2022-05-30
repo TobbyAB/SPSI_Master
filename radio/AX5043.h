@@ -1,6 +1,8 @@
 #ifndef RADIO_H_
 #define RADIO_H_
 
+
+
 #define trxstate_off                            0x00
 #define trxstate_rx                             0x01
 #define trxstate_rxwor                          0x02

@@ -12,6 +12,8 @@
 
 #include "stdint.h"
 
+extern uint8_t calminvcoi;
+
 void RadioQueueInit(void);
 void rf_433_Enqueue(uint32_t target_id,uint8_t control,uint8_t value);
 void rf_4068_Enqueue(uint32_t target_id,uint8_t control,uint8_t value);

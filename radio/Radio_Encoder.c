@@ -16,6 +16,7 @@
 #include "Radio_Drv.h"
 #include "Radio_Common.h"
 
+
 #define DBG_TAG "RF_EN"
 #define DBG_LVL DBG_INFO
 #include <rtdbg.h>
@@ -30,6 +31,9 @@ uint32_t Self_ID = 0;
 uint32_t Target_ID = 0;
 uint32_t Default_Self_ID = 50000000;
 uint32_t Default_Target_ID = 60000000;
+
+uint8_t calminvcoi = 0x85;
+
 
 typedef struct
 {
@@ -93,7 +97,7 @@ void rf_433_send(uint32_t target_id,uint8_t control,uint8_t value)
     uint8_t *buf = rt_malloc(50);
     sprintf((char *)buf,"M{%08ld,%08ld,%02d,%02d}M",target_id,Self_ID,control,value);
     Normal_send(&rf_433,buf,28);
-    rf_433_send_timer_start();
+
     rt_free(buf);
 }
 void rf_433_Dequeue(void *paramaeter)

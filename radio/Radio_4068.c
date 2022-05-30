@@ -28,7 +28,9 @@ struct ax5043 rf_4068;
 
 rt_sem_t IRQ2_Sem=RT_NULL;
 rt_thread_t rf_4068_task=RT_NULL;
-rt_timer_t rf_4068_send_timer = RT_NULL;
+rt_timer_t rf_4068_send_timer = RT_NULL;\
+
+
 
 void IRQ2_ISR(void *parameter)
 {
@@ -44,7 +46,7 @@ struct ax5043_config *rf_4068_config_init(void)
 {
     static struct ax5043_config *config;
     config = rt_malloc(sizeof(struct ax5043_config));
-    config->axradio_phy_vcocalib = 0;
+    config->axradio_phy_vcocalib = 1;
     config->axradio_phy_preamble_len = 32;
     config->axradio_phy_preamble_byte = 0x55;
     config->axradio_phy_preamble_flags = 0x38;
@@ -73,9 +75,15 @@ void rf_4068_Init(void)
     rf_4068.config = rf_4068_config_init();
     rf_4068.socket = rf_4068_radio_spi_init();
     strcpy(rf_4068.name,"rf_4068");
+    /*选频后，赋值给注册数组*/
+    set_registers_4068[82][1] = simple_autorange_pll(&rf_4068);
+
     memcpy(rf_4068.RegValue,set_registers_4068,sizeof(set_registers_4068));
     memcpy(rf_4068.TXRegValue,set_registers_tx_4068,sizeof(set_registers_tx_4068));
     memcpy(rf_4068.RXRegValue,set_registers_rx_4068,sizeof(set_registers_rx_4068));
+
+
+
     IRQ2_Bounding();
     rf_startup(&rf_4068);
     vcoi_rng_get(&rf_4068);
@@ -95,6 +103,7 @@ void rf_4068_send_timer_start(void)
 {
     rt_timer_start(rf_4068_send_timer);
 }
+
 void rf_4068_task_callback(void *parameter)
 {
     while(1)
@@ -113,18 +122,25 @@ void rf_4068_task_callback(void *parameter)
                 {
                     rf4068_rx_callback(rf_4068.ubRssi,rf_4068.RXBuff,rf_4068.RxLen);
                 }
+                LOG_D("rf_4068 trxstate_rx");
                 break;
             case trxstate_wait_xtal:     //3
                 SpiWriteSingleAddressRegister(&rf_4068,REG_AX5043_IRQMASK1, 0x00);//AX5043_IRQMASK1 = 0x00 otherwise crystal ready will fire all over again
                 rf_4068.ubRFState = trxstate_xtal_ready;
+
+                LOG_D("rf_4068 trxstate_xtal_ready");
                 break;
             case trxstate_pll_ranging:     //5
                 SpiWriteSingleAddressRegister(&rf_4068,REG_AX5043_IRQMASK1, 0x00);//AX5043_IRQMASK1 = 0x00 otherwise autoranging done will fire all over again
                 rf_4068.ubRFState = trxstate_pll_ranging_done;
+
+                LOG_D("rf_4068 trxstate_pll_ranging_done");
+                vcoi_rng_get(&rf_4068);
                 break;
             case trxstate_pll_settling:     //7
                 SpiWriteSingleAddressRegister(&rf_4068,REG_AX5043_RADIOEVENTMASK0, 0x00);// AX5043_RADIOEVENTMASK0 = 0x00;
                 rf_4068.ubRFState = trxstate_pll_settled;
+                LOG_D("rf_4068 trxstate_pll_settled");
                 break;
             case trxstate_tx_xtalwait:    //9
                 SpiReadSingleAddressRegister(&rf_4068,REG_AX5043_RADIOEVENTREQ0); //make sure REVRDONE bit is cleared, so it is a reliable indicator that the packet is out
@@ -139,26 +155,35 @@ void rf_4068_task_callback(void *parameter)
                     SpiWriteSingleAddressRegister(&rf_4068,REG_AX5043_FIFODATA, 0x11); // dummy byte for forcing dibit sync
                 }
                 TransmitData(&rf_4068);
+                LOG_D("rf_4068 trxstate_tx_xtalwait");
                 SpiWriteSingleAddressRegister(&rf_4068,REG_AX5043_PWRMODE, AX5043_PWRSTATE_FULL_TX); //AX5043_PWRMODE = AX5043_PWRSTATE_FULL_TX;
                 break;
-            case trxstate_tx_longpreamble:
-            case trxstate_tx_shortpreamble:
-            case trxstate_tx_packet:
+            case trxstate_tx_longpreamble:LOG_D("rf_4068 longpreamble");
+            case trxstate_tx_shortpreamble:LOG_D("rf_4068 shortpreamble");
+            case trxstate_tx_packet:LOG_D("rf_4068 trxstate_tx_packet");
                 TransmitData(&rf_4068);
                 break;
             case trxstate_tx_waitdone:                 //D
+                LOG_D("rf_4068 trxstate_tx_waitdone");
+                vcoi_rng_get(&rf_4068);
                 rt_timer_stop(rf_4068_send_timer);
                 SpiReadSingleAddressRegister(&rf_4068,REG_AX5043_RADIOEVENTREQ0);        //clear Interrupt flag
                 if (SpiReadSingleAddressRegister(&rf_4068,REG_AX5043_RADIOSTATE) != 0)
                 {
+                    LOG_D("rf_4068 trxstate_tx_waitdone %d",SpiReadSingleAddressRegister(&rf_4068,REG_AX5043_RADIOSTATE));
                     break;
                 }
+                LOG_D("rf_4068 trxstate_tx_waitdone %d",SpiReadSingleAddressRegister(&rf_4068,REG_AX5043_RADIOSTATE));
                 SpiWriteSingleAddressRegister(&rf_4068,REG_AX5043_RADIOEVENTMASK0, 0x00);
+
                 rf_restart(&rf_4068);
+
+                LOG_D("RF4068 Restart");
                 break;
             default:
                 SpiWriteSingleAddressRegister(&rf_4068,REG_AX5043_IRQMASK1, 0x00);
                 SpiWriteSingleAddressRegister(&rf_4068,REG_AX5043_IRQMASK0, 0x00);
+                LOG_D("rf_4068 default");
                 break;
             }
         }
@@ -172,3 +197,13 @@ void rf_4068_start(void)
     rf_4068_send_timer = rt_timer_create("rf_4068_send timeout", rf_4068_send_timer_callback, RT_NULL, 1000, RT_TIMER_FLAG_ONE_SHOT|RT_TIMER_FLAG_SOFT_TIMER);
     rf_4068_Init();
 }
+
+
+uint8_t buf1[]={0x31,0x31,0x32,0x32,0x33,0x33,0x34,0x34,0x35,0x35,0x36,0x36,0x37,0x37};
+void sendlow(void)
+{
+    rf_4068_Init();
+    Normal_send(&rf_4068,buf1,14);
+    LOG_D("test 40.67MHz once Now\r\n");
+}
+MSH_CMD_EXPORT(sendlow,sendtest1);

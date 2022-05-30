@@ -55,11 +55,15 @@ void Ax5043_Spi_Init(void);
 void Ax5043_Spi_Reset(struct ax5043 *dev);
 void SpiWriteSingleAddressRegister(struct ax5043 *dev,uint8_t Addr, uint8_t Data);
 void SpiWriteLongAddressRegister(struct ax5043 *dev,uint16_t Addr, uint8_t Data);
+
 void SpiLongWriteLongAddressRegister(struct ax5043 *dev,uint16_t Addr, uint16_t Data);
 void SpiWriteData(struct ax5043 *dev,uint8_t *pBuf,uint8_t Length);
 void SpiReadData(struct ax5043 *dev,uint8_t *pBuf,uint8_t Length);
 uint8_t SpiReadSingleAddressRegister(struct ax5043 *dev,uint8_t Addr);
 uint8_t SpiReadLongAddressRegister(struct ax5043 *dev,uint16_t Addr);
+
+
+
 struct rt_spi_device *rf_433_radio_spi_init(void);
 struct rt_spi_device *rf_4068_radio_spi_init(void);
 

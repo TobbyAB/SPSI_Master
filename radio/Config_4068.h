@@ -3,6 +3,9 @@
 
 #include "stdint.h"
 #include "AX5043.h"
+#include "Radio_Encoder.h"
+
+
 uint16_t set_registers_4068[][2]=
 {
     {REG_AX5043_MODULATION              , 0x08},
@@ -88,6 +91,7 @@ uint16_t set_registers_4068[][2]=
     {REG_AX5043_TXPWRCOEFFB1            , 0x07},
     {REG_AX5043_TXPWRCOEFFB0            , 0x00},
     {REG_AX5043_PLLVCOI                 , 0x85},
+//    {REG_AX5043_PLLVCOI                 , *minvcoi},
     {REG_AX5043_PLLRNGCLK               , 0x04},
     {REG_AX5043_BBTUNE                  , 0x0F},
     {REG_AX5043_BBOFFSCAP               , 0x77},

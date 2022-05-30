@@ -153,3 +153,5 @@ void SpiReadData(struct ax5043 *dev,uint8_t *pBuf,uint8_t Length)
     SendAddr=REG_AX5043_FIFODATA & 0x7F;
     rt_spi_send_then_recv(dev->socket,&SendAddr,1,pBuf,Length);
 }
+
+

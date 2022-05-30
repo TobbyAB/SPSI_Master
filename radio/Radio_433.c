@@ -112,18 +112,22 @@ void rf_433_task_callback(void *parameter)
                 {
                     rf433_rx_callback(rf_433.ubRssi,rf_433.RXBuff,rf_433.RxLen);
                 }
+                LOG_D("RF433 trxstate_rx");
                 break;
             case trxstate_wait_xtal:     //3
                 SpiWriteSingleAddressRegister(&rf_433,REG_AX5043_IRQMASK1, 0x00);//AX5043_IRQMASK1 = 0x00 otherwise crystal ready will fire all over again
                 rf_433.ubRFState = trxstate_xtal_ready;
+                LOG_D("RF433 trxstate_xtal_ready");
                 break;
             case trxstate_pll_ranging:     //5
                 SpiWriteSingleAddressRegister(&rf_433,REG_AX5043_IRQMASK1, 0x00);//AX5043_IRQMASK1 = 0x00 otherwise autoranging done will fire all over again
                 rf_433.ubRFState = trxstate_pll_ranging_done;
+                LOG_D("RF433 trxstate_pll_ranging_done");
                 break;
             case trxstate_pll_settling:     //7
                 SpiWriteSingleAddressRegister(&rf_433,REG_AX5043_RADIOEVENTMASK0, 0x00);// AX5043_RADIOEVENTMASK0 = 0x00;
                 rf_433.ubRFState = trxstate_pll_settled;
+                LOG_D("RF433 trxstate_pll_settled");
                 break;
             case trxstate_tx_xtalwait:    //9
                 SpiReadSingleAddressRegister(&rf_433,REG_AX5043_RADIOEVENTREQ0); //make sure REVRDONE bit is cleared, so it is a reliable indicator that the packet is out
@@ -138,26 +142,32 @@ void rf_433_task_callback(void *parameter)
                     SpiWriteSingleAddressRegister(&rf_433,REG_AX5043_FIFODATA, 0x11); // dummy byte for forcing dibit sync
                 }
                 TransmitData(&rf_433);
+                LOG_D("RF433 trxstate_tx_xtalwait");
                 SpiWriteSingleAddressRegister(&rf_433,REG_AX5043_PWRMODE, AX5043_PWRSTATE_FULL_TX); //AX5043_PWRMODE = AX5043_PWRSTATE_FULL_TX;
                 break;
-            case trxstate_tx_longpreamble:
-            case trxstate_tx_shortpreamble:
-            case trxstate_tx_packet:
+            case trxstate_tx_longpreamble:LOG_D("RF433 longpreamble");
+            case trxstate_tx_shortpreamble:LOG_D("RF433 shortpreamble");
+            case trxstate_tx_packet:LOG_D("trxstate_tx_packet");
                 TransmitData(&rf_433);
                 break;
             case trxstate_tx_waitdone:                 //D
+                LOG_D("RF433 trxstate_tx_waitdone");
                 rt_timer_stop(rf_433_send_timer);
                 SpiReadSingleAddressRegister(&rf_433,REG_AX5043_RADIOEVENTREQ0);        //clear Interrupt flag
                 if (SpiReadSingleAddressRegister(&rf_433,REG_AX5043_RADIOSTATE) != 0)
                 {
+                    LOG_D("RF433 trxstate_tx_waitdone %d",SpiReadSingleAddressRegister(&rf_433,REG_AX5043_RADIOSTATE));
                     break;
                 }
+                LOG_D("RF433 trxstate_tx_waitdone %d",SpiReadSingleAddressRegister(&rf_433,REG_AX5043_RADIOSTATE));
                 SpiWriteSingleAddressRegister(&rf_433,REG_AX5043_RADIOEVENTMASK0, 0x00);
                 rf_restart(&rf_433);
+                LOG_D("RF433 Restart");
                 break;
             default:
                 SpiWriteSingleAddressRegister(&rf_433,REG_AX5043_IRQMASK1, 0x00);
                 SpiWriteSingleAddressRegister(&rf_433,REG_AX5043_IRQMASK0, 0x00);
+                LOG_D("RF433 default");
                 break;
             }
         }

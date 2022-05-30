@@ -27,6 +27,10 @@ void Normal_send(struct ax5043 *dev,uint8_t *Buf, uint8_t Length);
 void Radio_Task_Init(void);
 void TransmitData(struct ax5043 *dev);
 uint8_t rf_restart(struct ax5043 *dev);
+uint8_t simple_autorange_pll(struct ax5043 *dev);
+void PLLRang_wait_for_xtal(struct ax5043 *dev);
+void RadioXtalON(struct ax5043 *dev);
+
 
 #endif
 
