@@ -572,10 +572,6 @@ uint8_t rf_startup(struct ax5043 *dev)
         dev->axradio_phy_chanpllrng[i] = (uint8_t)SpiReadSingleAddressRegister(dev,REG_AX5043_PLLRANGINGA);
     }
 
-
-
-
-
     SpiWriteSingleAddressRegister(dev,REG_AX5043_PWRMODE, AX5043_PWRSTATE_POWERDOWN);
 
     InitAx5043REG(dev);
