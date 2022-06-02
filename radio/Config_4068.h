@@ -5,7 +5,6 @@
 #include "AX5043.h"
 #include "Radio_Encoder.h"
 
-
 uint16_t set_registers_4068[][2]=
 {
     {REG_AX5043_MODULATION              , 0x08},

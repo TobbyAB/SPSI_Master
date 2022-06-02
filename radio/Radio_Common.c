@@ -18,6 +18,7 @@
 #include "Radio_Encoder.h"
 #include "Radio_Drv.h"
 
+
 #define DBG_TAG "radio_common"
 #define DBG_LVL DBG_LOG
 #include <rtdbg.h>
@@ -614,6 +615,31 @@ uint8_t rf_restart(struct ax5043 *dev)
     return AXRADIO_ERR_NOERROR;
 }
 
+uint8_t rf_restart_tx(struct ax5043 *dev)
+{
+    Ax5043_OFF(dev);
+//    Ax5043_Spi_Reset(dev);
+    Ax5043_Reset(dev);
+//    SpiWriteSingleAddressRegister(dev,REG_AX5043_PWRMODE, 0x00);
+//    SpiWriteSingleAddressRegister(dev,REG_AX5043_PINFUNCIRQ, 0x01);
+//    SpiWriteSingleAddressRegister(dev,REG_AX5043_PINFUNCIRQ, 0x00);
+//    SpiWriteSingleAddressRegister(dev,REG_AX5043_PINFUNCIRQ, 0x03);
+    InitAx5043REG(dev);
+    Ax5043SetRegisters_TX(dev);
+
+
+
+    SpiWriteSingleAddressRegister(dev,REG_AX5043_PLLRANGINGA, (dev->axradio_phy_chanpllrng[0] & 0x0F));
+    {
+        uint32_t f = dev->config->axradio_phy_chanfreq[0];
+        SpiWriteSingleAddressRegister(dev,REG_AX5043_FREQA0, f);
+        SpiWriteSingleAddressRegister(dev,REG_AX5043_FREQA1, (f >> 8));
+        SpiWriteSingleAddressRegister(dev,REG_AX5043_FREQA2, (f >> 16));
+        SpiWriteSingleAddressRegister(dev,REG_AX5043_FREQA3, (f >> 24));
+    }
+//    dev->ubRFState = trxstate_rx;
+    return AXRADIO_ERR_NOERROR;
+}
 /*自动选频程序_晶振等待*/
 void PLLRang_wait_for_xtal(struct ax5043 *dev)
 {
@@ -656,6 +682,7 @@ uint8_t simple_autorange_pll(struct ax5043 *dev)
 
     //IE_4 = 1; // enable radio interrupt
     SpiWriteSingleAddressRegister(dev,REG_AX5043_PWRMODE , AX5043_PWRSTATE_XTAL_ON); // start crystal
+
     PLLRang_wait_for_xtal(dev);
 
 //    IWDG_ReloadCounter();
@@ -679,6 +706,7 @@ uint8_t simple_autorange_pll(struct ax5043 *dev)
               break;
       }
       SpiWriteSingleAddressRegister(dev,REG_AX5043_IRQMASK1 , 0x00);
+
       pllrng = SpiReadSingleAddressRegister(dev,REG_AX5043_PLLRANGINGA);
 
       LOG_D("40.67MHz Pllrang vcio=%.2X,rang=%.2X\r\n",i,pllrng);
@@ -717,7 +745,7 @@ uint8_t simple_autorange_pll(struct ax5043 *dev)
 
    LOG_D("40.67MHz Pllrang minvcoi=%.2X\r\n",minvcoi);
     //在这里设置最优的range
-   SpiWriteLongAddressRegister(dev,REG_AX5043_PLLVCOI,minvcoi);
+//   SpiWriteLongAddressRegister(dev,REG_AX5043_PLLVCOI,minvcoi);
    //vcoi
 
     //在下面检索0x80-0xbf NEW CAL PLLVCOI VALUE 结束

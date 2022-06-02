@@ -31,6 +31,9 @@ uint8_t simple_autorange_pll(struct ax5043 *dev);
 void PLLRang_wait_for_xtal(struct ax5043 *dev);
 void RadioXtalON(struct ax5043 *dev);
 
+uint8_t rf_restart_tx(struct ax5043 *dev);
+uint8_t set_autorange_pll_value(struct ax5043 *dev);
+
 
 #endif
 

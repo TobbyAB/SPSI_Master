@@ -23,6 +23,7 @@
 
 int main(void)
 {
+
     flash_Init();
     ID_Init();
     rf_433_start();
