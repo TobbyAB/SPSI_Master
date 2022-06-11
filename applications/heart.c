@@ -338,6 +338,7 @@ void heart_callback(void *parameter)
                         heart_mode = send;
                         File_Output(rf_now,Valve_Status,PSI_Status,1,0,info_temp->rssi,1,0);
                         LOG_I("radio_%d first heart success\r\n",info_temp->freq);
+                        LOG_W("Now tick time = %d \r\n",rt_tick_get());
                         radio_refresh(info_temp);
                         heart_time_start(27700);
                     }
