@@ -20,7 +20,7 @@
 
 
 #define DBG_TAG "radio_common"
-#define DBG_LVL DBG_LOG
+#define DBG_LVL DBG_INFO
 #include <rtdbg.h>
 
 uint8_t axradio_get_pllvcoi(struct ax5043 *dev)
@@ -47,8 +47,8 @@ uint8_t axradio_get_pllvcoi(struct ax5043 *dev)
 }
 void vcoi_rng_get(struct ax5043 *dev)
 {
-    LOG_I("%s VCO is %x\r\n",dev->name,axradio_get_pllvcoi(dev));
-    LOG_I("%s RNG is %d\r\n",dev->name,dev->axradio_phy_chanpllrng[0]);
+    LOG_D("%s VCO is %x\r\n",dev->name,axradio_get_pllvcoi(dev));
+    LOG_D("%s RNG is %d\r\n",dev->name,dev->axradio_phy_chanpllrng[0]);
 }
 void InitAx5043REG(struct ax5043 *dev)
 {
@@ -649,7 +649,7 @@ void PLLRang_wait_for_xtal(struct ax5043 *dev)
     for(;;)
     {
       data = SpiReadSingleAddressRegister(dev,REG_AX5043_XTALSTATUS);
-      LOG_W("AUTORANG_PLL For PLLRang_wait_for_xtal");
+      LOG_D("AUTORANG_PLL For PLLRang_wait_for_xtal");
         if (data)
             break;
     }

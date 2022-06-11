@@ -21,7 +21,7 @@
 #include "Config_4068.h"
 
 #define DBG_TAG "radio_4068"
-#define DBG_LVL DBG_LOG
+#define DBG_LVL DBG_INFO
 #include <rtdbg.h>
 
 struct ax5043 rf_4068;
@@ -86,10 +86,10 @@ void rf_4068_Init(void)
     rf_startup(&rf_4068);
 
     /*选频后，赋值给注册数组*/
-    LOG_W("VCOI Initial value:  %x\r\n",set_registers_4068[82][1]);
+    LOG_D("VCOI Initial value:  %x\r\n",set_registers_4068[82][1]);
     set_registers_4068[82][1] = simple_autorange_pll(&rf_4068);
 
-    LOG_W("VCOI Correction value: %x\r\n",set_registers_4068[82][1]);
+    LOG_D("VCOI Correction value: %x\r\n",set_registers_4068[82][1]);
     memcpy(rf_4068.RegValue,set_registers_4068,sizeof(set_registers_4068));
     rf_startup(&rf_4068);
 
