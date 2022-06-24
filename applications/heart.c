@@ -42,7 +42,7 @@ rt_mutex_t rf_lock = RT_NULL;
 rf_info info_433;
 rf_info info_4068;
 
-uint8_t rf_now ;
+uint8_t rf_now  ;
 
 extern uint32_t Target_ID ;
 extern uint8_t PSI_Status,Valve_Status;
@@ -82,11 +82,6 @@ void button_request(uint8_t rf_select)
         break;
     }
 }
-void heart_single(void)
-{
-    rt_sem_release(button_sem);
-}
-MSH_CMD_EXPORT(heart_single,heart_single);
 void psi_upload(uint8_t value)
 {
     if(info_4068.alive==1 || info_433.alive==1 )
@@ -174,6 +169,12 @@ void rf_write(uint8_t rf_select,int rssi)
         File_Output(0,Valve_Status,PSI_Status,1,info_4068.retry,rssi,1,0);
     }
 }
+
+void heart_single(void)
+{
+    rt_sem_release(button_sem);
+}
+
 void buttontest_callback(void *parameter)
 {
     rf_info *info_temp = rt_malloc(sizeof(rf_info));
@@ -305,6 +306,7 @@ void heart_callback(void *parameter)
                 radio_refresh(&info_433);
                 heart_time_start(10000);
                 heart_mode = send;
+                connect_sem_flag = 1;
             }
             else
             {

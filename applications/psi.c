@@ -26,6 +26,7 @@ uint8_t PSI_Status=0;
 uint8_t Valve_Status=2;
 uint8_t Psi_Counter,Psi_Lost;
 
+
 void psi_open(void)
 {
     if(PSI_Status==0 && Psi_Lost==0)
@@ -132,6 +133,7 @@ void valve_close(void)
 }
 void psi_thread_callback(void *parameter)
 {
+
     while(1)
     {
         if(rt_sem_take(psi_sem,100) == RT_EOK)
