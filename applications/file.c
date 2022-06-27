@@ -53,7 +53,7 @@ void File_Output(uint8_t select,uint8_t valve,uint8_t psi,uint8_t shake,uint8_t 
     {
         char *buf = rt_malloc(64);
         Global_Nums ++;//序列增加
-        sprintf(buf,"%d %d %d %d %d %d %d %d %d\n",Global_Nums,(select>0)?433:4068,valve,psi,shake,send_num,rssi,first,button);
+        sprintf(buf,"%d %d %d %d %d %d %d %d %d\n",Global_Nums,(select>0)?433:4068,valve,psi,shake,send_num,(rssi>-26)?-26:rssi,first,button);
 
         if(Global_Nums%400000 < 200000)
         {

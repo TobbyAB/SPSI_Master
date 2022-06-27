@@ -57,7 +57,7 @@ struct ax5043_config *rf_4068_config_init(void)
     config->axradio_phy_chanpllrnginit[0] = 0xFF;
     config->axradio_phy_maxfreqoffset = 157;
 //    config->axradio_phy_rssireference = 0x3A;
-    config->axradio_phy_rssireference = 0x36;//调整过的RSSI
+    config->axradio_phy_rssireference = 0x35;//调整过的RSSI
     config->axradio_phy_rssioffset = 64;
     config->axradio_framing_synclen = 32;
     config->axradio_framing_syncflags = 0x38;
@@ -128,6 +128,12 @@ void rf_4068_task_callback(void *parameter)
                 Ax5043Receiver_Continuous(&rf_4068);
                 if (rf_4068.RxLen != 0)
                 {
+                    if (rf_4068.ubRssi > -26 )
+                    {
+                        LOG_D("RX 4068 fact RSSI is %d\r\n",rf_4068.ubRssi);
+                        rf_4068.ubRssi = -26;
+                        LOG_D("RX 4068 adjust RSSI is %d\r\n",rf_4068.ubRssi);
+                    }
                     rf4068_rx_callback(rf_4068.ubRssi,rf_4068.RXBuff,rf_4068.RxLen);
                 }
                 LOG_D("rf_4068 trxstate_rx");

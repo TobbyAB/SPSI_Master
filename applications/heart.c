@@ -306,7 +306,6 @@ void heart_callback(void *parameter)
                 radio_refresh(&info_433);
                 heart_time_start(10000);
                 heart_mode = send;
-                connect_sem_flag = 1;
             }
             else
             {

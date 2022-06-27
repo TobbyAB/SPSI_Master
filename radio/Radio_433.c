@@ -110,6 +110,12 @@ void rf_433_task_callback(void *parameter)
                 Ax5043Receiver_Continuous(&rf_433);
                 if (rf_433.RxLen != 0)
                 {
+                    if (rf_433.ubRssi > -26 )
+                    {
+                        LOG_D("RX 433 fact RSSI is %d\r\n",rf_433.ubRssi);
+                        rf_433.ubRssi = -26;
+                        LOG_D("RX 433 adjust RSSI is %d\r\n",rf_433.ubRssi);
+                    }
                     rf433_rx_callback(rf_433.ubRssi,rf_433.RXBuff,rf_433.RxLen);
                 }
                 LOG_D("RF433 trxstate_rx");
