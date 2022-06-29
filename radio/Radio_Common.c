@@ -705,7 +705,7 @@ uint8_t simple_autorange_pll(struct ax5043 *dev)
       SpiWriteSingleAddressRegister(dev,REG_AX5043_IRQMASK1 , 0x00);
 
       pllrng = SpiReadSingleAddressRegister(dev,REG_AX5043_PLLRANGINGA);
-     if(pllrng == 0x46)
+     if(pllrng & 0x20)
       {
           VcoiF++;
           continue;
