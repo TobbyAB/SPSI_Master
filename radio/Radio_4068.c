@@ -94,7 +94,7 @@ void rf_4068_Init(void)
     rf_startup(&rf_4068);
 
 
-    vcoi_rng_get(&rf_4068);
+//    vcoi_rng_get(&rf_4068);
     Ax5043SetRegisters_RX(&rf_4068);
     Ax5043ReceiverON(&rf_4068);
 }
