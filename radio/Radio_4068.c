@@ -128,7 +128,7 @@ void rf_4068_task_callback(void *parameter)
                 Ax5043Receiver_Continuous(&rf_4068);
                 if (rf_4068.RxLen != 0)
                 {
-                    if (rf_4068.ubRssi > -26 && rf_4068.ubRssi != 0 )
+                    if (rf_4068.ubRssi > -26 && rf_4068.ubRssi < 0 )
                     {
                         LOG_D("RX 4068 fact RSSI is %d\r\n",rf_4068.ubRssi);
                         rf_4068.ubRssi = -26;
