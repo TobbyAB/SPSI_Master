@@ -29,8 +29,8 @@ extern struct ax5043 rf_4068;
 
 uint32_t Self_ID = 0;
 uint32_t Target_ID = 0;
-uint32_t Default_Self_ID = 50000000;
-uint32_t Default_Target_ID = 60000000;
+uint32_t Default_Self_ID = 11100004;
+uint32_t Default_Target_ID = 11500004;
 
 uint8_t calminvcoi = 0x85;
 

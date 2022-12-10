@@ -52,7 +52,10 @@ void vcoi_rng_get(struct ax5043 *dev)
 void InitAx5043REG(struct ax5043 *dev)
 {
     static uint8_t i;
-
+    if (dev->name == "rf_4068")
+    {
+        SetAutoRangValue(dev);
+    }
     for (i = 0; i < 125; i++)
     {
         SpiWriteLongAddressRegister(dev, dev->RegValue[i][0], dev->RegValue[i][1]);
@@ -126,6 +129,7 @@ void Ax5043_Reset(struct ax5043 *dev)
     SpiWriteSingleAddressRegister(dev, REG_AX5043_PINFUNCIRQ, 0x00);
     SpiWriteSingleAddressRegister(dev, REG_AX5043_PINFUNCIRQ, 0x03);
 }
+
 void RadioXtalON(struct ax5043 *dev)
 {
     static uint8_t ubTemp;
@@ -138,6 +142,7 @@ void RadioXtalON(struct ax5043 *dev)
         rt_thread_mdelay(10);
     } while (dev->ubRFState == trxstate_wait_xtal);
 }
+
 void Ax5043ReceiverON(struct ax5043 *dev)
 {
     SpiWriteLongAddressRegister(dev, REG_AX5043_RSSIREFERENCE, dev->config->axradio_phy_rssireference);
